@@ -12,12 +12,12 @@
 // specify vertices of the triangle with an inner triangle removed
     GLfloat vertices[] = 
     {//             // coordinates                          // color //
-        -0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f, // lower left point
-		 0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f, // Lower right point
-		 0.0f,  0.5f * float(sqrt(3)) * 2/3, 0.0f, // upper point
-		-0.25f, 0.5f * float(sqrt(3)) * 1/6, 0.0f, // middle left point
-		 0.25f, 0.5f * float(sqrt(3)) * 1/6, 0.0f, // middle right point
-		 0.0f, -0.5f * float(sqrt(3)) * 1/3, 0.0f, // middle down point
+        -0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f,   0.0f, 1.0f, 0.2f, // lower left point
+		 0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f,   0.0f, 0.3f, 1.0f, // Lower right point
+		 0.0f,  0.5f * float(sqrt(3)) * 2/3, 0.0f,   1.0f, 0.3f, 0.3f, // upper point
+		-0.25f, 0.5f * float(sqrt(3)) * 1/6, 0.0f,   0.6f, 0.8f, 0.17f, // middle left point
+		 0.25f, 0.5f * float(sqrt(3)) * 1/6, 0.0f,   0.0f, 0.45f, 0.17f, // middle right point
+		 0.0f, -0.5f * float(sqrt(3)) * 1/3, 0.0f,   0.0f, 0.4f, 0.3f // middle down point
     };
 
     // based on the vertex data, openGL wouldn't know what to do
@@ -33,8 +33,7 @@
 
 int main()
 {
-    namespace fs = std::filesystem;
-    std::cout << fs::current_path() << "\n";
+    //std::cout << std::filesystem::current_path() << "\n";
 
     // initialize glfw context
     glfwInit();
@@ -54,7 +53,7 @@ int main()
     int window_height = 800;
 
     // create a glfw window and check that the window was successfully created
-    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 3", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "failed to create glfw window" << "\n";
@@ -72,7 +71,7 @@ int main()
     glViewport(0, 0, window_width, window_height);
 
     // generates shader object using shaders defualt.vert and default.frag
-	Shader shader_program("desktop/openGL_examples/src/example02/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example02/resources/shaders/frag.glsl");
+	Shader shader_program("desktop/openGL_examples/src/example03/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example03/resources/shaders/frag.glsl");
 
     // Generates Vertex Array Object and binds it
 	VAO VAO1;
@@ -85,7 +84,8 @@ int main()
 	EBO EBO1(indices, sizeof(indices));
 
 	// links VBO to VAO
-	VAO1.LinkVBO(VBO1, 0);
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6*sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6*sizeof(float), (void*)(3*sizeof(float)));
     
 	// unbind all to prevent accidentally modifying them
 	VAO1.Unbind();

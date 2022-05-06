@@ -36,9 +36,9 @@ int main()
     // specify vertices of the triangle
     GLfloat vertices[] = 
     {
-        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // lower left point
-		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // lower right point
-		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f // upper point
+        -0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f, // lower left point
+		 0.5f, -0.5f * float(sqrt(3)) * 1/3, 0.0f, // lower right point
+		 0.0f,  0.5f * float(sqrt(3)) * 2/3, 0.0f // upper point
     };
     
     // specify the width and height of the window

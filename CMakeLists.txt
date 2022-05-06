@@ -47,6 +47,7 @@ foreach(subdir ${subdirs})
 
     # get the name for the executable
     set(path "${src_files}")
+
     cmake_path(GET path STEM executable_name)
 
     # add the executable
