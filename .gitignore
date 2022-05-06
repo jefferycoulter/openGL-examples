@@ -1,8 +1,8 @@
 # directories
 .vs/
-bin/
-int/
-test/
+.vscode/
+examples/
+build/
 
 # xcode files
 *.xcodeproj

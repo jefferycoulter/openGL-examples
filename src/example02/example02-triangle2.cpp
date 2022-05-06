@@ -1,0 +1,125 @@
+#include <iostream>
+#include <math.h>
+#include <filesystem>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include "resources/shader.h"
+#include "resources/VAO.h"
+#include "resources/VBO.h"
+#include "resources/EBO.h"
+
+// specify vertices of the triangle with an inner triangle removed
+    GLfloat vertices[] = 
+    {
+        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // lower left point
+		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower right point
+		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f, // upper point
+		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // middle left point
+		0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, // middle right point
+		0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f // middle down point
+    };
+
+    // based on the vertex data, openGL wouldn't know what to do
+    // so rephrase the problem in terms of "elements".  we want to 
+    // create three triangles (elements) so specify vertices of
+    // three triangles by indices that coincide
+    GLuint indices[] = 
+    {
+        0, 3, 5, // lower left triangle
+		3, 2, 4, // lower right triangle
+		5, 4, 1 // upper triangle
+    };
+
+int main()
+{
+    namespace fs = std::filesystem;
+    std::cout << fs::current_path() << "\n";
+
+    // initialize glfw context
+    glfwInit();
+
+    // specify the minimum version of openGL to be used
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+    // specify the "profile" or functions to use
+    // the "core profile" (GLFW_OPENGL_CORE_PROFILE) contains only the modern functions.
+    // "compatibility profile" (GLFW_OPENGL_COMPAT_PROFILE) contains both modern and 
+    // outdated functions as well
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // specify the width and height of the window
+    int window_width = 800;
+    int window_height = 800;
+
+    // create a glfw window and check that the window was successfully created
+    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 2", NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "failed to create glfw window" << "\n";
+        glfwTerminate(); // make sure to end glfw context before exiting
+        return -1;
+    }
+
+    // although the window has been created, you have to tell glfw to use it in the current context
+    glfwMakeContextCurrent(window);
+
+    // load glad
+    gladLoadGL();
+
+    // specify viewport, or where openGL should render within the window (here, the entire window)
+    glViewport(0, 0, window_width, window_height);
+
+    // generates shader object using shaders defualt.vert and default.frag
+	Shader shader_program("desktop/openGL_examples/src/example02/resources/shaders/shader.vert", "desktop/openGL_examples/src/example02/resources/shaders/shader.frag");
+
+    // Generates Vertex Array Object and binds it
+	VAO VAO1;
+	VAO1.Bind();
+
+	// Generates Vertex Buffer Object and links it to vertices
+	VBO VBO1(vertices, sizeof(vertices));
+	// Generates Element Buffer Object and links it to indices
+	EBO EBO1(indices, sizeof(indices));
+
+	// Links VBO to VAO
+	VAO1.LinkVBO(VBO1, 0);
+	// Unbind all to prevent accidentally modifying them
+	VAO1.Unbind();
+	VBO1.Unbind();
+	EBO1.Unbind();
+
+    // now do stuff in the window until it is told to close
+    while (!glfwWindowShouldClose(window))
+    {
+        // specify the background color in RGBa format
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        // specify the new color to the back buffer
+        glClear(GL_COLOR_BUFFER_BIT);
+        // tell openGL to use the shader program created above
+        shader_program.Use();
+        // bind the VAO so openGL knows to use it
+        VAO1.Bind();
+        // specify the primatives that should be used to draw the elements
+        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+        // swap the buffers so that the color appears
+        glfwSwapBuffers(window);
+        // tell glfw to poll events (e.g. window resizing, window close, etc.)
+        glfwPollEvents();
+    }
+    
+    // delete the shader objects and program once the window is closed
+    VAO1.Delete();
+	VBO1.Delete();
+	EBO1.Delete();
+	shader_program.Delete();
+
+    // since the glfw window is a pointer, you have to manually delete it when finished
+    glfwDestroyWindow(window);
+
+    // end the glfw context
+    glfwTerminate();
+
+    return 0;
+}
