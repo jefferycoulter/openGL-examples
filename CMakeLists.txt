@@ -68,6 +68,8 @@ foreach(subdir ${subdirs})
     PRIVATE
         inc/glad/include
         inc/GLFW/include
+        inc/glm
+        inc/stb
     )
 
 endforeach(subdir ${subdirs})
