@@ -5,32 +5,39 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
 #include "resources/shader.h"
 #include "resources/VAO.h"
 #include "resources/VBO.h"
 #include "resources/EBO.h"
 #include "resources/texture.h"
 
-// vertex coordinates
+// vertices coordinates
 GLfloat vertices[] =
-{ //     coordinates     /        colors      /   texture  //
-	-0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
-	-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
-	 0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
-	 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	1.0f, 0.0f  // lower right corner
+{ //     coordinates     /        colors      
+	-0.5f, 0.0f,  0.5f,     0.0f, 0.20f, 0.44f, 
+	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.0, 
+	 0.5f, 0.0f, -0.5f,     0.20f, 0.0, 0.44f, 
+	 0.5f, 0.0f,  0.5f,     0.0f, 0.8f, 0.44f, 
+	 0.0f, 0.8f,  0.0f,     0.92f, 0.0, 0.76f
 };
 
-// indices
+// indices for vertices order
 GLuint indices[] =
 {
-	0, 2, 1, // upper triangle
-	0, 3, 2 // lower triangle
+	0, 1, 2,
+	0, 2, 3,
+	0, 1, 4,
+	1, 2, 4,
+	2, 3, 4,
+	3, 0, 4
 };
 
 int main()
 {
-    //std::cout << std::filesystem::current_path() << "\n";
-
     // initialize glfw context
     glfwInit();
 
@@ -49,7 +56,7 @@ int main()
     int window_height = 800;
 
     // create a glfw window and check that the window was successfully created
-    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 6", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 7", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "failed to create glfw window" << "\n";
@@ -67,31 +74,32 @@ int main()
     glViewport(0, 0, window_width, window_height);
 
     // generates shader object using shaders defualt.vert and default.frag
-	Shader shader("desktop/openGL_examples/src/example06/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example06/resources/shaders/frag.glsl");
+	Shader shader("desktop/openGL_examples/src/example07/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example07/resources/shaders/frag.glsl");
 
     // Generates Vertex Array Object and binds it
 	VAO VAO1;
 	VAO1.Bind();
 
-	// generate vertex buffer object and link it to vertices
+    // generate vertex buffer object and link it to vertices
 	VBO VBO1(vertices, sizeof(vertices));
 
 	// generate element buffer object and link it to indices
 	EBO EBO1(indices, sizeof(indices));
 
 	// links VBO to VAO
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8*sizeof(float), (void*)0);
-    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8*sizeof(float), (void*)(3*sizeof(float)));
-    VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8*sizeof(float), (void*)(6*sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6*sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6*sizeof(float), (void*)(3*sizeof(float)));
     
 	// unbind all to prevent accidentally modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-    // create texture object
-    Texture trump("textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-    trump.Unit(shader, "tex0", 0);
+    // variables for rotating the pyramid
+	float rotation = 0.0f;
+	double old_time = glfwGetTime();
+
+    glEnable(GL_DEPTH_TEST);
     
     // now do stuff in the window until it is told to close
     while (!glfwWindowShouldClose(window))
@@ -99,15 +107,35 @@ int main()
         // specify the background color in RGBa format
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // specify the new color to the back buffer
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // tell openGL to use the shader program created above
         shader.Use();
-        // bind texture
-        trump.Bind();
+        // get time for rotating the pyramid
+        double time = glfwGetTime();
+        if (time - old_time >= 1 / 60)
+		{
+			rotation += 0.5f;
+			old_time = time;
+		}
+        // initialize model, projection, and view matrices
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 proj = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        // set up the matrices
+        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+        view = glm::translate(view,glm::vec3(0.0f, -0.5f, -2.0f));
+        proj = glm::perspective(glm::radians(45.0f), (float)(window_width/window_height), 0.1f, 100.0f);
+        // output the matrices into the vertex shader
+		int model_loc = glGetUniformLocation(shader.shader_program, "model");
+		glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
+		int view_loc = glGetUniformLocation(shader.shader_program, "view");
+		glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
+		int proj_loc = glGetUniformLocation(shader.shader_program, "proj");
+		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(proj));
         // bind the VAO so openGL knows to use it
         VAO1.Bind();
         // specify the primatives that should be used to draw the elements
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
         // swap the buffers so that the color appears
         glfwSwapBuffers(window);
         // tell glfw to poll events (e.g. window resizing, window close, etc.)
@@ -118,7 +146,6 @@ int main()
     VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
-    trump.Delete();
 	shader.Delete();
 
     // since the glfw window is a pointer, you have to manually delete it when finished

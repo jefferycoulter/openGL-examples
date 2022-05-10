@@ -22,6 +22,7 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 # other directories with cmake files
 add_subdirectory( inc/glad )
 add_subdirectory( inc/glfw )
+add_subdirectory( inc/glm )
 
 # macro to loop through example directories
 macro(SUBDIRLIST result curdir)
@@ -58,6 +59,7 @@ foreach(subdir ${subdirs})
     PUBLIC
         GLAD
         glfw # glfw needs to be lowercase
+        glm
     )
 
     # include directories
