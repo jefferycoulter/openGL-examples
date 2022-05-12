@@ -71,7 +71,7 @@ int main()
     glViewport(0, 0, window_width, window_height);
 
     // generates shader object using shaders defualt.vert and default.frag
-	Shader shader_program("desktop/openGL_examples/src/example03/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example03/resources/shaders/frag.glsl");
+	Shader shader_program("../src/example03/resources/shaders/vert.glsl", "../src/example03/resources/shaders/frag.glsl");
 
     // Generates Vertex Array Object and binds it
 	VAO VAO1;

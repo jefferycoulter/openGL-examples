@@ -29,7 +29,7 @@ GLuint indices[] =
 
 int main()
 {
-    //std::cout << std::filesystem::current_path() << "\n";
+    std::cout << std::filesystem::current_path() << "\n";
 
     // initialize glfw context
     glfwInit();
@@ -52,7 +52,7 @@ int main()
     GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 6", NULL, NULL);
     if (window == NULL)
     {
-        std::cout << "failed to create glfw window" << "\n";
+        std::cerr << "failed to create glfw window" << "\n";
         glfwTerminate(); // make sure to end glfw context before exiting
         return -1;
     }
@@ -67,7 +67,7 @@ int main()
     glViewport(0, 0, window_width, window_height);
 
     // generates shader object using shaders defualt.vert and default.frag
-	Shader shader("desktop/openGL_examples/src/example06/resources/shaders/vert.glsl", "desktop/openGL_examples/src/example06/resources/shaders/frag.glsl");
+	Shader shader("../src/example06/resources/shaders/vert.glsl", "../src/example06/resources/shaders/frag.glsl");
 
     // Generates Vertex Array Object and binds it
 	VAO VAO1;
@@ -90,7 +90,7 @@ int main()
 	EBO1.Unbind();
 
     // create texture object
-    Texture trump("textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    Texture trump("../src/example06/resources/textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
     trump.Unit(shader, "tex0", 0);
     
     // now do stuff in the window until it is told to close

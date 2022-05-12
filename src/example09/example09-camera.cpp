@@ -14,6 +14,7 @@
 #include "resources/VBO.h"
 #include "resources/EBO.h"
 #include "resources/texture.h"
+#include "resources/camera.h"
 
 // vertices coordinates
 GLfloat vertices[] =
@@ -21,19 +22,35 @@ GLfloat vertices[] =
 	-0.5f, 0.0f,  0.5f,     0.0f, 0.20f, 0.44f, 
 	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.0, 
 	 0.5f, 0.0f, -0.5f,     0.20f, 0.0, 0.44f, 
-	 0.5f, 0.0f,  0.5f,     0.0f, 0.8f, 0.44f, 
-	 0.0f, 0.8f,  0.0f,     0.92f, 0.0, 0.76f
+	 0.5f, 0.0f,  0.5f,     0.0f, 0.8f, 0.44f,
+
+	 -0.5f, 1.0f,  0.5f,     0.0f, 0.20f, 0.44f, 
+	-0.5f, 1.0f, -0.5f,     0.83f, 0.70f, 0.0, 
+	 0.5f, 1.0f, -0.5f,     0.20f, 0.0, 0.44f, 
+	 0.5f, 1.0f,  0.5f,     0.0f, 0.8f, 0.44f, 
+
 };
 
 // indices for vertices order
 GLuint indices[] =
 {
-	0, 1, 2,
-	0, 2, 3,
-	0, 1, 4,
-	1, 2, 4,
-	2, 3, 4,
-	3, 0, 4
+	0, 3, 2, 
+	0, 2, 1,
+
+	0, 1, 5,
+	0, 5, 4,
+
+    1, 2, 5,
+    2, 5, 6,
+
+    7, 3, 2,
+    7, 2, 6,
+
+    0, 4, 7,
+    0, 7, 3,
+
+    4, 6, 5,
+    4, 6, 7
 };
 
 int main()
@@ -56,7 +73,7 @@ int main()
     int window_height = 800;
 
     // create a glfw window and check that the window was successfully created
-    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 7", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "OpenGL Example 9", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "failed to create glfw window" << "\n";
@@ -74,7 +91,7 @@ int main()
     glViewport(0, 0, window_width, window_height);
 
     // generates shader object using shaders defualt.vert and default.frag
-	Shader shader("../src/example07/resources/shaders/vert.glsl", "../src/example07/resources/shaders/frag.glsl");
+	Shader shader("../src/example09/resources/shaders/vert.glsl", "../src/example09/resources/shaders/frag.glsl");
 
     // Generates Vertex Array Object and binds it
 	VAO VAO1;
@@ -95,11 +112,10 @@ int main()
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-    // variables for rotating the pyramid
-	float rotation = 0.0f;
-	double old_time = glfwGetTime();
-
     glEnable(GL_DEPTH_TEST);
+
+    // create camera object
+    Camera camera(window_width, window_height, glm::vec3(0.0f, 0.0f, 4.0f));
     
     // now do stuff in the window until it is told to close
     while (!glfwWindowShouldClose(window))
@@ -110,28 +126,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // tell openGL to use the shader program created above
         shader.Use();
-        // get time for rotating the pyramid
-        double time = glfwGetTime();
-        if (time - old_time >= 1 / 60)
-		{
-			rotation += 0.5f;
-			old_time = time;
-		}
-        // initialize model, projection, and view matrices
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 proj = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        // set up the matrices
-        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-        view = glm::translate(view,glm::vec3(0.0f, -0.5f, -2.0f));
-        proj = glm::perspective(glm::radians(45.0f), (float)(window_width/window_height), 0.1f, 100.0f);
-        // output the matrices into the vertex shader
-		int model_loc = glGetUniformLocation(shader.shader_program, "model");
-		glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
-		int view_loc = glGetUniformLocation(shader.shader_program, "view");
-		glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
-		int proj_loc = glGetUniformLocation(shader.shader_program, "proj");
-		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(proj));
+        // get input from user
+        camera.Inputs(window);
+        // update the matrices with the input
+        camera.Matrix(45.0f, 0.1f, 100.0f, shader, "camera_matrix");
         // bind the VAO so openGL knows to use it
         VAO1.Bind();
         // specify the primatives that should be used to draw the elements

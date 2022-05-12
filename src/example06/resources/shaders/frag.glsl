@@ -1,6 +1,6 @@
 #version 330 core
 
-out vec4 FragColor; // output the colors
+layout(location = 0) out vec4 FragColor; // output the colors
 in vec3 color; // input from vertex shader
 in vec2 coord; // input from vertex shader
 

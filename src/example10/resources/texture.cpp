@@ -12,9 +12,6 @@ Texture::Texture(const char* image, GLenum textype, GLenum slot, GLenum format, 
     // since stb and openGL read in images differently
     stbi_set_flip_vertically_on_load(true);
     unsigned char *img = stbi_load(image, &img_width, &img_height, &n_channels, 0);
-    if (!img) {
-        std::cerr << "failed to load image" << "\n";
-    }
     
     // generate openGL texture object
     glGenTextures(1, &m_tex);
@@ -24,7 +21,7 @@ Texture::Texture(const char* image, GLenum textype, GLenum slot, GLenum format, 
     glBindTexture(GL_TEXTURE_2D, m_tex);
     
     // specify algorithm that is used to make the image smaller or bigger when resized
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    
     // specify the way the texture repeats in both x and y directions
