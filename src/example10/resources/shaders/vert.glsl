@@ -6,7 +6,7 @@ layout (location = 2) in vec3 aNormal; // specify normals
 
 out vec3 color; // output to fragment shader
 out vec3 Normal; // output normal to fragment shader
-out vec3 current_position // output current position to fragment shader
+out vec3 current_position; // output current position to fragment shader
 
 uniform mat4 camera_matrix;
 uniform mat4 model; // imports the model matrix from the main function

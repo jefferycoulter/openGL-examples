@@ -150,7 +150,7 @@ int main()
     light_VBO.Unbind();
     light_EBO.Unbind();
 
-    glm::vec4 light_color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 light_color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 	glm::vec3 light_pos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 light_model = glm::mat4(1.0f);
 	light_model = glm::translate(light_model, light_pos);
