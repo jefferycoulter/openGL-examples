@@ -15,6 +15,7 @@ Texture::Texture(const char* image, GLenum textype, GLenum slot, GLenum format, 
     if (!img) {
         std::cerr << "failed to load image" << "\n";
     }
+    //std::cout << "color channels: " << n_channels << "\n";
     
     // generate openGL texture object
     glGenTextures(1, &m_tex);

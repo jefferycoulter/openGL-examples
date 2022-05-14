@@ -90,7 +90,7 @@ int main()
 	EBO1.Unbind();
 
     // create texture object
-    Texture trump("../src/example06/resources/textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    Texture trump("../src/example06/resources/textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
     trump.Unit(shader, "tex0", 0);
     
     // now do stuff in the window until it is told to close

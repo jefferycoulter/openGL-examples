@@ -196,7 +196,6 @@ int main()
 			old_time = time;
 		}
         // initialize model matrix for rotations
-
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 1.0f));
         glUniform3f(glGetUniformLocation(shader.shader_program, "cam_pos"), camera.position.x, camera.position.y, camera.position.z);

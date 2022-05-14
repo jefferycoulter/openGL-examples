@@ -5,6 +5,9 @@ project( OPENGL_EXAMPLES )
 
 # set output directory
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/examples )
+if(MSCV)
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/examples )
+endif(MSVC)
 
 # cmake settings
 set( CMAKE_CXX_STANDARD 17 )
