@@ -1,6 +1,6 @@
 #include "texture.h"
 
-Texture::Texture(const char* image, GLenum tex_type, const char* s_type, GLenum slot, GLenum format, GLenum pixel_type)
+Texture::Texture(const char* image, GLenum tex_type, const char* s_type, GLuint slot, GLenum format, GLenum pixel_type)
 {
     // assign texture type to Texture object
     type = tex_type;
@@ -13,16 +13,20 @@ Texture::Texture(const char* image, GLenum tex_type, const char* s_type, GLenum 
     // since stb and openGL read in images differently
     stbi_set_flip_vertically_on_load(true);
     unsigned char *img = stbi_load(image, &img_width, &img_height, &n_channels, 0);
+    if (!img) {
+        std::cerr << "failed to load image" << "\n";
+    }
     
     // generate openGL texture object
     glGenTextures(1, &m_tex);
 
     // assign the texture to a texture unit
-    glActiveTexture(slot);
+    glActiveTexture(GL_TEXTURE0+slot);
+    unit = slot;
     glBindTexture(tex_type, m_tex);
     
     // specify algorithm that is used to make the image smaller or bigger when resized
-    glTexParameteri(tex_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(tex_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
     glTexParameteri(tex_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    
     // specify the way the texture repeats in both x and y directions
@@ -45,23 +49,24 @@ Texture::Texture(const char* image, GLenum tex_type, const char* s_type, GLenum 
 void Texture::Unit(Shader& shader, const char* uniform, GLuint unit)
 {
     // get uniform from the shader program
-    GLuint tex0_location = glGetUniformLocation(shader.shader_program, uniform);
+    GLuint location = glGetUniformLocation(shader.shader_program, uniform);
 
     // call use before changing the uniform
     shader.Use();
 
     // set the value of the uniform
-    glUniform1i(tex0_location, unit);
+    glUniform1i(location, unit);
 }
 
 void Texture::Bind()
 {
+    glActiveTexture(GL_TEXTURE0+unit);
 	glBindTexture(type, m_tex);
 }
 
 void Texture::Unbind()
 {
-	glBindTexture(type, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Delete()

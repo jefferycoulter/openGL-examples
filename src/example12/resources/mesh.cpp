@@ -15,6 +15,7 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 	VAO.LinkAttrib(VBO, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0); // coords
     VAO.LinkAttrib(VBO, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3*sizeof(float))); // color
     VAO.LinkAttrib(VBO, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6*sizeof(float))); // normals
+    VAO.LinkAttrib(VBO, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float))); // texture
 	// unbind all to prevent accidentally modifying them
 	VAO.Unbind();
 	VBO.Unbind();
@@ -41,13 +42,16 @@ void Mesh::Draw(Shader& shader, Camera& camera)
         if (type == "diffuse")
         { // if the type of texture[i] is diffuse, increment the number of diffuse textures
             num = std::to_string(n_diff++);
+            //std::cout << "diffuse num: " << num << "\n";
         }
         else if (type == "specular")
         { // if the type of texture[i] is specular, increment the number of specular textures
             num = std::to_string(n_spec++);
+            //std::cout << "specular num: " << num << "\n";
         }
 
         // find the uniform of the name type+num in the shader program
+        //std::cout << "texture name " << (type + num).c_str() << "\n";
         textures[i].Unit(shader, (type + num).c_str(), i);
         textures[i].Bind();
     }

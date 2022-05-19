@@ -95,8 +95,8 @@ int main()
     // texture data
 	Texture textures[]
 	{
-		Texture("../src/example12/textures/planks.png", GL_TEXTURE_2D, "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
-		Texture("../src/example12/textures/planksSpec.png", GL_TEXTURE_2D, "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
+		Texture("../src/example12/resources/textures/planks.png", GL_TEXTURE_2D, "diffuse", 0, GL_RGBA, GL_UNSIGNED_BYTE),
+		Texture("../src/example12/resources/textures/planksSpec.png", GL_TEXTURE_2D, "specular", 1, GL_RED, GL_UNSIGNED_BYTE)
 	};
 
     // generates shader object using shaders defualt.vert and default.frag
@@ -122,15 +122,15 @@ int main()
 	glm::mat4 light_model = glm::mat4(1.0f);
 	light_model = glm::translate(light_model, light_pos);
 
-	glm::vec3 pyramid_pos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::mat4 pyramid_model = glm::mat4(1.0f);
-	pyramid_model = glm::translate(pyramid_model, pyramid_pos);
+	glm::vec3 object_pos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::mat4 object_model = glm::mat4(1.0f);
+	object_model = glm::translate(object_model, object_pos);
 
     light_shader.Use();
 	glUniformMatrix4fv(glGetUniformLocation(light_shader.shader_program, "model"), 1, GL_FALSE, glm::value_ptr(light_model));
 	glUniform4f(glGetUniformLocation(light_shader.shader_program, "light_color"), light_color.x, light_color.y, light_color.z, light_color.w);
 	shader.Use();
-	glUniformMatrix4fv(glGetUniformLocation(shader.shader_program, "model"), 1, GL_FALSE, glm::value_ptr(pyramid_model));
+	glUniformMatrix4fv(glGetUniformLocation(shader.shader_program, "model"), 1, GL_FALSE, glm::value_ptr(object_model));
 	glUniform4f(glGetUniformLocation(shader.shader_program, "light_color"), light_color.x, light_color.y, light_color.z, light_color.w);
 	glUniform3f(glGetUniformLocation(shader.shader_program, "light_pos"), light_pos.x, light_pos.y, light_pos.z);
     glEnable(GL_DEPTH_TEST);
@@ -138,7 +138,7 @@ int main()
     // create camera object
     Camera camera(window_width, window_height, glm::vec3(0.0f, 0.0f, 4.0f));
 
-    // variables for rotating the pyramid
+    // variables for rotating the object
 	float rotation = 0.0f;
 	double old_time = glfwGetTime();
     
@@ -153,9 +153,7 @@ int main()
         camera.Inputs(window);
         // update the matrices with the input
         camera.Update(45.0f, 0.1f, 100.0f);
-        // tell openGL to use the shader program created above
-        shader.Use();
-        // get time for rotating the pyramid
+        // get time for rotating the object
         double time = glfwGetTime();
         if (time - old_time >= 1 / 60)
 		{
@@ -163,16 +161,16 @@ int main()
 			old_time = time;
 		}
         // initialize model matrix for rotations
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 1.0f));
+        //glm::mat4 model = glm::mat4(1.0f);
+        //model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 1.0f));
         
         // output the matrices into the vertex shader
-		int model_loc = glGetUniformLocation(shader.shader_program, "model");
-		glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
+		//int model_loc = glGetUniformLocation(shader.shader_program, "model");
+		//glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
 
         // draw the meshes
         floor.Draw(shader, camera);
-        light.Draw(shader, camera);
+        light.Draw(light_shader, camera);
 
         // swap the buffers so that the color appears
         glfwSwapBuffers(window);

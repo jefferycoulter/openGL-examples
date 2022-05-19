@@ -5,7 +5,7 @@ out vec4 FragColor; // output the colors
 in vec3 current_position;
 in vec3 Normal;
 in vec3 color; // input from vertex shader
-in vec2 coords
+in vec2 coords;
 
 // Gets the Texture Units from the main function
 uniform sampler2D diffuse0;
@@ -34,7 +34,7 @@ vec4 point_light()
 
 	// diffuse lighting
 	vec3 normal = normalize(Normal);
-	vec3 light_direction = normalize(light_cec);
+	vec3 light_direction = normalize(light_vec);
 	float diffuse = max(dot(normal, light_direction), 0.0f);
 
 	// specular lighting
@@ -64,10 +64,10 @@ vec4 direct_light()
 	float spec_amount = pow(max(dot(view_direction, reflection_direction), 0.0f), 16);
 	float specular = spec_amount * specular_light;
 
-	return (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * light_color;
+	return (texture(diffuse0, coords) * (diffuse + ambient) + texture(specular0, coords).r * specular) * light_color;
 }
 
-vec4 spotLight()
+vec4 spot_light()
 {
 	// controls how big the area that is lit up is
 	float outer_cone = 0.90f;
@@ -83,16 +83,16 @@ vec4 spotLight()
 
 	// specular lighting
 	float specular_light = 0.50f;
-	vec3 view_direction = normalize(camPos - crntPos);
+	vec3 view_direction = normalize(cam_pos - current_position);
 	vec3 reflection_direction = reflect(-light_direction, normal);
 	float spec_amount = pow(max(dot(view_direction, reflection_direction), 0.0f), 16);
-	float specular = specAmount * specular_light;
+	float specular = spec_amount * specular_light;
 
 	// calculates the intensity of the crntPos based on its angle to the center of the light cone
-	float angle = dot(vec3(0.0f, -1.0f, 0.0f), -light_lirection);
+	float angle = dot(vec3(0.0f, -1.0f, 0.0f), -light_direction);
 	float inten = clamp((angle - outer_cone) / (inner_cone - outer_cone), 0.0f, 1.0f);
 
-	return (texture(diffuse0, coords) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * light_color;
+	return (texture(diffuse0, coords) * (diffuse * inten + ambient) + texture(specular0, coords).r * specular * inten) * light_color;
 }
 
 void main()

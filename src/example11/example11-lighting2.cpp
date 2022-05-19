@@ -226,6 +226,7 @@ int main()
 	VBO1.Delete();
 	EBO1.Delete();
 	shader.Delete();
+    light_shader.Delete();
 
     // since the glfw window is a pointer, you have to manually delete it when finished
     glfwDestroyWindow(window);

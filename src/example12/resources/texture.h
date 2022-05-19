@@ -12,8 +12,9 @@ class Texture
         GLuint m_tex;
         GLenum type;
         const char* str_type; // string type for :Mesh::Draw() function
+        GLuint unit;
 
-        Texture(const char* image, GLenum tex_type, const char* s_type, GLenum slot, GLenum format, GLenum pixel_type);
+        Texture(const char* image, GLenum tex_type, const char* s_type, GLuint slot, GLenum format, GLenum pixel_type);
 
         // assigns a texture unit to a texture
         void Unit(Shader& shader, const char* uniform, GLuint unit);
