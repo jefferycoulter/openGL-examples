@@ -135,7 +135,7 @@ int main()
 	EBO1.Unbind();
 
     // create shader for light source
-    Shader light_shader("../src/example10/resources/shaders/lvert.glsl", "../src/example10/resources/shaders/lfrag.glsl");
+    Shader light_shader("../src/example11/resources/shaders/lvert.glsl", "../src/example11/resources/shaders/lfrag.glsl");
     // generate light VAO and bind
     VAO light_VAO;
     light_VAO.Bind();
