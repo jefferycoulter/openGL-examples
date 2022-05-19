@@ -1,6 +1,6 @@
 #version 330 core
 
-layout(location = 0) out vec4 FragColor; // output the colors
+out vec4 FragColor; // output the colors
 in vec3 color; // input from vertex shader
 in vec2 coord; // input from vertex shader
 
@@ -8,5 +8,5 @@ uniform sampler2D tex0;
 
 void main()
 {
-      FragColor = texture(tex0[0], coord);
+      FragColor = texture(tex0, coord);
 }

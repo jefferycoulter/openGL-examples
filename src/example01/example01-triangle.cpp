@@ -68,6 +68,14 @@ int main()
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     // give the shader source code to the shaders
+    // first argument is shader id, second is number of source strings, 
+    // third is reference to source strings, fourth is length of source strings.
+    // here, each shader only has one source string.
+    //
+    // see: 
+    //    https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glShaderSource.xhtml
+    //    https://stackoverflow.com/questions/22100408/what-is-the-meaning-of-the-parameters-to-glshadersource
+    // for more details
     glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
     glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
 
@@ -97,29 +105,41 @@ int main()
     // initialize vertex array and buffer objects
     GLuint VAO, VBO;
 
-    // create the VAO with a single object (must be done before create the VBO)
+    // create the VAO with a single object (must be done before create the VBO).
+    // this attaches the id of the vertex array object to the variable VAO for later use
     glGenVertexArrays(1, &VAO);
 
-    // create the buffer with a single object
+    // create the buffer with a single object.
+    // similarly, this attaches the id of the vertex buffer object to the variable VBO
     glGenBuffers(1, &VBO);
 
-    // make the VAO the current vertex array object by binding it
+    // make the vertex array object saved in VAO the current vertex array object by binding it.
+    // binding in openGL makes the binded object the current object to be used, so whenever a 
+    // function is called to modify a certain object, the binded object is modified.  
+    // here, whenever a function uses or modifies a vertex buffer
+    // object, it will use the object referenced by the VBO variable.
 	glBindVertexArray(VAO);
 
-    // bind the vertex buffer to an openGL array buffer
+    // bind the vertex buffer referenced by VBO to an openGL array buffer. binding here means
+    // the same as described above
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    // store the vertex data in the buffer
+    // store the vertex data in the buffer.  since VBO was binded to GL_ARRAY_BUFFER above,
+    // our data will be stored in the buffer referenced by the VBO variable.
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // tell openGL how to interpret the vertex data
+    // first parameter is location in shader, second is the number of values per vertex,
+    // third is the type of value, the fourth is whether the type is an integer value,
+    // the fifth is the size of each vertex, and the last is a pointer offset, i.e. where the
+    // data begins in the array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     // enable the vertex attribute so that openGL knows to use it
     glEnableVertexAttribArray(0);
 
-    // bind both the VBO and VAO to 0 so that the VAO and VBO that have been created aren't
-    // accidentally changed by some function later
+    // bind both the buffer object and array object to 0 so that the VAO and VBO that have 
+    // been created aren't accidentally changed by some function later
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -132,7 +152,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         // tell openGL to use the shader program created above
         glUseProgram(shader_program);
-        // bind the VAO so openGL knows to use it
+        // bind the VAO created above so openGL knows to use it
         glBindVertexArray(VAO);
         // specify the primatives that should be used to draw the vertices
         glDrawArrays(GL_TRIANGLES, 0, 3);

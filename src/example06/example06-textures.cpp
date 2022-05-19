@@ -17,7 +17,7 @@ GLfloat vertices[] =
 	-0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,	0.0f, 0.0f, // lower left corner
 	-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	0.0f, 1.0f, // upper left corner
 	 0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f, // upper right corner
-	 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	1.0f, 0.0f  // lower right corner
+	 0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 1.0f,	1.0f, 0.0f  // lower right corner
 };
 
 // indices
@@ -93,6 +93,8 @@ int main()
     Texture trump("../src/example06/resources/textures/trump.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
     trump.Unit(shader, "tex0", 0);
     
+    //shader.compileErrors(shader.shader_program, "no");
+
     // now do stuff in the window until it is told to close
     while (!glfwWindowShouldClose(window))
     {
